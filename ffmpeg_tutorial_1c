@@ -76,13 +76,17 @@ int main(int argc, const char *argv[])
   // the component that knows how to enCOde and DECode the stream
   // it's the codec (audio or video)
   // http://ffmpeg.org/doxygen/trunk/structAVCodec.html
-  AVCodec *pCodec = NULL;
+  //change all AVCodec *pcodec = NULL; to below
+  const AVCodec *pCodec ;
   // this component describes the properties of a codec used by the stream i
   // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html
+
   AVCodecParameters *pCodecParameters =  NULL;
   int video_stream_index = -1;
 
   // loop though all the streams and print its main information
+  
+  const AVCodec *pLocalCodec;
   for (int i = 0; i < pFormatContext->nb_streams; i++)
   {
     AVCodecParameters *pLocalCodecParameters =  NULL;
@@ -94,17 +98,18 @@ int main(int argc, const char *argv[])
 
     logging("finding the proper decoder (CODEC)");
 
-    AVCodec *pLocalCodec = NULL;
+    
 
     // finds the registered decoder for a codec ID
     // https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html#ga19a0ca553277f019dd5b0fec6e1f9dca
-    //pLocalCodec = avcodec_find_decoder(pLocalCodecParameters->codec_id);
-
-    /*if (pLocalCodec==NULL) {
+    //manually find AV_CODEC_ID_H264
+    
+    pLocalCodec = avcodec_find_decoder(AV_CODEC_ID_H264);
+      if (pLocalCodec==NULL) {
       logging("ERROR unsupported codec!");
       // In this example if the codec is not found we just skip it
       continue;
-    }*/
+    }
 
     // when the stream is a video we store its index, codec parameters and codec
     if (pLocalCodecParameters->codec_type == AVMEDIA_TYPE_VIDEO) {
@@ -115,12 +120,13 @@ int main(int argc, const char *argv[])
       }
 
       logging("Video Codec: resolution %d x %d", pLocalCodecParameters->width, pLocalCodecParameters->height);
-    } else if (pLocalCodecParameters->codec_type == AVMEDIA_TYPE_AUDIO) {
+    } 
+    /*else if (pLocalCodecParameters->codec_type == AVMEDIA_TYPE_AUDIO) {
       logging("Audio Codec: %d channels, sample rate %d", pLocalCodecParameters->ch_layout, pLocalCodecParameters->sample_rate);
     }
 
     // print its name, id and bitrate
-    logging("\tCodec %s ID %d bit_rate %lld", pLocalCodec->name, pLocalCodec->id, pLocalCodecParameters->bit_rate);
+    logging("\tCodec %s ID %d bit_rate %lld", pLocalCodec->name, pLocalCodec->id, pLocalCodecParameters->bit_rate);*/
   }
 
   if (video_stream_index == -1) {
